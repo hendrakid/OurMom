@@ -19,5 +19,8 @@
     "express": "^4.16.4",
     "mongoose": "^5.4.11",
     "morgan": "^1.9.1"
+  },
+  "engines": {
+    "node": "10.x"
   }
 }
