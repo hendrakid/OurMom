@@ -37,12 +37,21 @@ app.use(logger("dev"));
 // untuk cross origin
 app.use(cors())
 
-// Priority serve any static files.
-app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
-router.get('*', function(req, res) {
-  response.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-});
+
+
+
+
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, './client/build')));
+
+// // An api endpoint that returns a short list of items
+// app.get('/api/getList', (req,res) => {
+//     var list = ["item1", "item2", "item3"];
+//     res.json(list);
+//     console.log('Sent list of items');
+// });
+
 
 // this is our get method
 // this method fetches all available data in our database
@@ -99,6 +108,10 @@ router.post("/putData", (req, res) => {
 
 // append /api for our http requests
 app.use("/api", router);
+// Handles any requests that don't match the ones above
+app.get('*', (req,res) =>{
+  res.sendFile(path.join(__dirname+'./client/build/index.html'));
+});
 
 // launch our backend into a port
 // app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
