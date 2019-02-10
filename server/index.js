@@ -45,6 +45,11 @@ router.get("/getData", (req, res) => {
   });
 });
 
+
+app.get('*', function(request, response) {
+  response.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+});
+
 // this is our update method
 // this method overwrites existing data in our database
 router.post("/updateData", (req, res) => {
@@ -94,5 +99,5 @@ app.use("/api", router);
 // app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
 
 app.listen((process.env.PORT || API_PORT), function(){
-  console.log('listening on *:5000');
+  console.log(`LISTENING ON PORT ${API_PORT}`)
 });
