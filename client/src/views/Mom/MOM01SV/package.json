@@ -1,0 +1,6 @@
+{
+  "name": "Maintain UserLogin",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./MOM01SV.js"
+}
