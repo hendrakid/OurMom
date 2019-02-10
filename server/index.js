@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const express = require("express");
+const path = require('path');
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const Data = require("./data");
@@ -36,6 +37,13 @@ app.use(logger("dev"));
 // untuk cross origin
 app.use(cors())
 
+// Priority serve any static files.
+app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
+
+router.get('*', function(req, res) {
+  response.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+});
+
 // this is our get method
 // this method fetches all available data in our database
 router.get("/getData", (req, res) => {
@@ -46,9 +54,6 @@ router.get("/getData", (req, res) => {
 });
 
 
-router.get('*', function(request, response) {
-  response.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-});
 
 // this is our update method
 // this method overwrites existing data in our database
