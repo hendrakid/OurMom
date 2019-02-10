@@ -46,7 +46,7 @@ router.get("/getData", (req, res) => {
 });
 
 
-app.get('*', function(request, response) {
+router.get('*', function(request, response) {
   response.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
 });
 
