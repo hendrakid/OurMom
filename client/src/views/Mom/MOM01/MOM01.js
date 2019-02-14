@@ -70,7 +70,7 @@ class MOM01 extends Component {
 
   putDataToDB = (username, password, role, ) => {
 
-    axios.post("http://localhost:3000/api/putData", {
+    axios.post("/api/putData", {
       username: username,
       password: password,
       role: role

@@ -37,59 +37,32 @@ app.use(logger("dev"));
 // untuk cross origin
 app.use(cors())
 
-
-
-
-
-
 // Serve the static files from the React app
+// cari tau tentang line ini
+// mungkin untuk build path client
 app.use(express.static(path.join(__dirname, '../client/build')));
-
-// // An api endpoint that returns a short list of items
-// app.get('/api/getList', (req,res) => {
-//     var list = ["item1", "item2", "item3"];
-//     res.json(list);
-//     console.log('Sent list of items');
-// });
-
 
 // this is our get method
 // this method fetches all available data in our database
-router.get("/getData", (req, res) => {
-  Data.find((err, data) => {
-    if (err) return res.json({ success: false, error: err });
-    return res.json({ success: true, data: data });
-  });
+router.post("/getData", (req, res) => {
+
+  const { projectionField, limit, param } = req.body
+  console.log(req.body)
+  x = '.*' + param + '.*';
+  Data.find({ 'username': new RegExp(x) },
+    (err, data) => {
+      if (err) return res.json({ success: false, error: err });
+      return res.json({ success: true, data: data });
+    }).select(projectionField).limit(limit);
 });
 
-
-
-// this is our update method
-// this method overwrites existing data in our database
-router.post("/updateData", (req, res) => {
-  const { id, update } = req.body;
-  Data.findOneAndUpdate(id, update, err => {
-    if (err) return res.json({ success: false, error: err });
-    return res.json({ success: true });
-  });
-});
-
-// this is our delete method
-// this method removes existing data in our database
-router.delete("/deleteData", (req, res) => {
-  const { id } = req.body;
-  Data.findOneAndDelete(id, err => {
-    if (err) return res.send(err);
-    return res.json({ success: true });
-  });
-});
 
 // this is our create methid
 // this method adds new data in our database
 router.post("/putData", (req, res) => {
   let data = new Data();
 
-  const {username, password, role } = req.body;
+  const { username, password, role } = req.body;
 
   if (!username || !password || !role) {
     return res.json({
@@ -109,13 +82,13 @@ router.post("/putData", (req, res) => {
 // append /api for our http requests
 app.use("/api", router);
 // Handles any requests that don't match the ones above
-app.get('*', (req,res) =>{
-  res.sendFile(path.join(__dirname+'../client/build/index.html'));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '../client/build/index.html'));
 });
 
 // launch our backend into a port
 // app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
 
-app.listen((process.env.PORT || API_PORT), function(){
+app.listen((process.env.PORT || API_PORT), function () {
   console.log(`LISTENING ON PORT ${API_PORT}`)
 });

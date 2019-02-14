@@ -15,8 +15,11 @@ import {
   Row
 } from 'reactstrap'
 
+import Lov from './lov.js'
+import { DebounceInput } from 'react-debounce-input';
+
 class MOM02 extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.toggle = this.toggle.bind(this)
@@ -24,42 +27,144 @@ class MOM02 extends Component {
     this.state = {
       collapse: true,
       fadeIn: true,
-      timeout: 300
+      timeout: 300,
+      showLov: false,
+      visible: false,
+      lovText: '',
+      lovId: '',
+      lovDataReturn: new Object({})
     }
 
     this.alertFunction = this.alertFunction.bind(this)
     this.onDismiss = this.onDismiss.bind(this)
-    this.state = {
-      visible: false
-    }
+    this.callLov = this.callLov.bind(this)
+    this.dataCountCallBack = this.dataCountCallBack.bind(this)
+    this.dataRowCallBack = this.dataRowCallBack.bind(this)
+    this.clickLov = this.clickLov.bind(this)
   }
 
-  toggle () {
+  toggle() {
     this.setState({ collapse: !this.state.collapse })
   }
 
-  toggleFade () {
+  toggleFade() {
     this.setState((prevState) => { return { fadeIn: !prevState } })
   }
 
-  alertFunction (event) {
+  alertFunction(event) {
     event.preventDefault()
     console.log('Save')
     this.setState({
       visible: true
     })
   }
-  onDismiss (event) {
+  onDismiss(event) {
     this.setState({
       visible: false
     })
   }
 
-  render () {
+  callLov(lovText) {
+    this.setState({ // buka tutup biar dia loaddata
+      showLov: false
+    })
+    this.setState({
+      lovText: lovText,
+      showLov: true
+    })
+    // console.log(lovText);
+  }
+  dataCountCallBack(isShow) {
+    this.setState({
+      showLov: isShow
+    })
+  }
+  dataRowCallBack(data) {
+    console.log(data)
+    if (data != null) {
+      this.setState({
+        lovText: data.username,
+        lovId: data._id
+      })
+      console.log("id : " + data._id + " \ntext : " + data.username);
+    } else {
+      this.setState({
+        lovText: '',
+        lovId: ''
+      })
+    }
+  }
+  clickLov(event) {
+    this.setState({
+      showLov: !this.state.showLov
+    })
+  }
+
+  /*
+    .lookup-form {
+      position: absolute;
+      display: none;
+      box-shadow: rgb(211, 211, 211) 2px 2px 5px 2px;
+      z-index: 9999;
+      background-color: #fff;
+      overflow: auto;
+  }
+  
+      // var htmlVal = '
+      <div class="modal fade" id="modal-' + lookupTableId + '" role="dialog"><div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">' + lookupTitle + '</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group large-font">
+              <label>Search</label>
+              <input placeholder="type here" class="form-control ' + lookupInputClass + ' " id="' + lookupSearchParamId + '"/>
+            </div>
+            <table  id="' + lookupTableId + '" 
+                    data-method="post" 
+                    data-url="' + lookupUrl + '" 
+                    data-content-type="application/json" 
+                    data-data-type="json" 
+                    data-query-params-type="limit" 
+                    data-query-params="' + lookupPreFunc + '" 
+                    data-response-handler="loadData" 
+                    data-side-pagination="server" 
+                    data-pagination="true">
+              <thead>
+                <tr>
+                  <th></th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+      objparent.append(htmlVal);
+  */
+
+
+  render() {
+    // this.setState({
+    //   lovText: ['row1', 'row2']
+    // })
+    const { lovText } = this.state;
+
+    const divStyle = {
+      position: 'absolute',
+      zIndex: 1,
+      top: '0px',
+      right: '15px'
+    };
+
     return (
       <div className='animated fadeIn'>
         <Row>
-          <Col xs='12' md='12'>
+          <Col xs='12' md='8'>
             <Card>
               <CardHeader>
                 <strong>Basic Form</strong> Elements
@@ -92,8 +197,29 @@ class MOM02 extends Component {
                       <Label htmlFor='text-input'>Member Name</Label>
                     </Col>
                     <Col xs='12' md='9'>
-                      <Input type='text' id='text-input' name='text-input' placeholder='Member Name' />
+                      <Input type='hidden' vaule={this.state.lovId} id='text-input' />
+                      <DebounceInput
+                        element={Input}
+                        minLength={2}
+                        value={this.state.lovText}
+                        debounceTimeout={750}
+                        onChange={e => this.callLov(e.target.value)} />
                       <FormText color='muted' />
+                      <Button onClick={this.clickLov} style={divStyle}><i className='fa fa-search'/></Button>
+                      {
+
+                        this.state.showLov == true ?
+                          <Lov
+                            data={lovText}
+                            url='/api/getData'
+                            param='param'
+                            columns={[{ dataField: 'username', text: 'Username' },
+                            { dataField: 'role', text: 'Role' }]}
+                            dataCountCallBack={this.dataCountCallBack}
+                            dataRowCallBack={this.dataRowCallBack}
+                          />
+                          : ''
+                      }
                     </Col>
                   </FormGroup>
                   <FormGroup row>

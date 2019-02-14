@@ -13,7 +13,7 @@ class MOM01SV extends Component {
     this.getDataFromDb()
   }
 
-  getDataFromDb = () => {
+  getDataFromDb () {
     fetch("/api/getData")
       .then(data => data.json())
       .then(res => this.setState({ data: res.data }));
